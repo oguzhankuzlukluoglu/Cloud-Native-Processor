@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-deployment
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+      - name: worker
+        image: cloud-native-worker:v1
+        imagePullPolicy: Never
+        env:
+        - name: REDIS_URL
+          value: "redis-service:6379"
+        volumeMounts:
+        - name: storage
+          mountPath: /root/uploads
+      volumes:
+      - name: storage
+        persistentVolumeClaim:
+          claimName: task-pv-claim
